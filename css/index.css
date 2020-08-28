@@ -122,10 +122,28 @@ form {
   width: 400px;
 }
 
+.container #cepData {
+  width: 95%;
+  max-width: 400px;
+  margin-top: 30px;
+}
+
 .container #cepData ul {
   list-style-type: none;
 }
 
 .container #cepData ul li {
+  display: flex;
   margin: 16px 0;
+}
+
+.container #cepData ul li span {
+  font-weight: 700;
+  margin-right: 10px;
+}
+
+@media (max-width: 630px) {
+  .container #cepData ul li {
+    flex-direction: column;
+  }
 }
