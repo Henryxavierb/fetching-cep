@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Consultar CEP</title>
+    <link rel="stylesheet" href="../css/index.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <!-- container -->
+    <div class="container">
+      <!-- form -->
+      <form id="form">
+        <!-- input -->
+        <div class="input">
+          <label for="cep">Digite seu CEP</label>
+          <input
+            id="cep"
+            type="text"
+            minlength="9"
+            maxlength="9"
+            autofocus="on"
+            autocomplete="off"
+            placeholder="00000-000"
+          />
+
+          <span id="validation"></span>
+        </div>
+        <!-- input -->
+
+        <!-- button -->
+        <button type="submit" id="consultarCep">
+          <span>Consultar</span>
+        </button>
+        <!-- button -->
+      </form>
+      <!-- form -->
+
+      <div id="cepData">
+        <ul>
+          <li class="infoCep">
+            <span>CEP: </span>
+            <div></div>
+          </li>
+
+          <li class="infoCep">
+            <span>Logradouro: </span>
+            <div></div>
+          </li>
+
+          <li class="infoCep">
+            <span>Complemento: </span>
+            <div></div>
+          </li>
+
+          <li class="infoCep">
+            <span>Bairro: </span>
+            <div></div>
+          </li>
+
+          <li class="infoCep">
+            <span>Localidade: </span>
+            <div></div>
+          </li>
+
+          <li class="infoCep">
+            <span>UF : </span>
+            <div></div>
+          </li>
+
+          <li class="infoCep">
+            <span>DDD: </span>
+            <div></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- container -->
+  </body>
+
+  <script src="../js/index.js"></script>
+</html>

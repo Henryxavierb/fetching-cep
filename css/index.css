@@ -1,0 +1,131 @@
+* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #fafdfe;
+  font-family: "roboto" sans-serif;
+}
+
+.container {
+  width: 100%;
+  height: 100vh;
+
+  margin-top: 10vw;
+
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+form {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.input {
+  width: 100%;
+  flex-direction: column;
+
+  display: flex;
+  align-items: center;
+  justify-items: center;
+}
+
+.input label {
+  font-weight: 400;
+
+  margin-bottom: 10px;
+}
+
+.input span {
+  font-weight: 700;
+  color: #c62828;
+
+  margin: 10px 0 20px;
+}
+
+.input input {
+  width: 95%;
+  height: 40px;
+  max-width: 400px;
+
+  padding: 0 10px;
+
+  border-radius: 4px;
+  border: 1px solid #24222e;
+}
+
+.container button {
+  width: 95%;
+  height: 45px;
+  max-width: 400px;
+
+  border: none;
+  border-radius: 3px;
+
+  color: #fdfafe;
+  background-color: #24222e;
+
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.container button:disabled {
+  cursor: not-allowed;
+  background-color: #757575;
+}
+
+.container button span {
+  font-size: 16px;
+  font-weight: 600;
+
+  z-index: 2;
+  position: relative;
+}
+
+.container button::after {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  width: 0;
+  height: 100%;
+
+  border-radius: 3px;
+
+  background-color: #43a047;
+
+  content: "";
+  transition: all 0.3s;
+
+  z-index: 1;
+  position: absolute;
+}
+
+.container button:disabled::after {
+  width: 0;
+  height: 0;
+}
+
+.container button:hover::after {
+  width: 400px;
+}
+
+.container #cepData ul {
+  list-style-type: none;
+}
+
+.container #cepData ul li {
+  margin: 16px 0;
+}
