@@ -3,8 +3,8 @@ const cepData = document.getElementById("cepData");
 const btnCep = document.getElementById("consultarCep");
 
 // Initial state
-// btnCep.disabled = true;
-// cepData.style.display = "none";
+btnCep.disabled = true;
+cepData.style.display = "none";
 
 // ////////////////////////////////////////////////////////////////////////////
 //
@@ -16,40 +16,40 @@ cep.addEventListener("keyup", (event) => {
   const inputKey = event.key;
   const inputValue = event.target.value;
 
-  // behaviorButton();
+  behaviorButton();
   cepFactory(inputKey).cepMask().mask;
 
-  // function behaviorButton() {
-  //   const isAvailableCep = inputValue?.length > 8;
-  //   isAvailableCep ? (btnCep.disabled = false) : (btnCep.disabled = true);
-  // }
+  function behaviorButton() {
+    const isAvailableCep = inputValue?.length > 8;
+
+    if (isAvailableCep) {
+      btnCep.disabled = false;
+
+      setTimeout(() => {
+        cepData.style.display = "flex";
+
+        cepFactory()
+          .fetchDataByCep()
+          .then((response) => response.json())
+          .then((data) => setCepData(data));
+      }, 300);
+    } else {
+      btnCep.disabled = true;
+    }
+  }
 });
 
 document.querySelector("#form").addEventListener("submit", (event) => {
   event.preventDefault();
 
+  setTimeout(() => {
+    cepData.style.display = "flex";
+  }, 500);
+
   cepFactory()
     .fetchDataByCep()
     .then((response) => response.json())
-    .then((data) => {
-      const cepResponse = JSON.stringify(data);
-      const transformCepAnObject = JSON.parse(cepResponse);
-
-      setTimeout(() => {
-        document.querySelectorAll(".infoCep").forEach((element) => {
-          const getKeyElement = element.querySelector("span");
-
-          const getKeyValue = getKeyElement.textContent
-            .toLocaleLowerCase()
-            .replace(":", "");
-
-          const getReplacedElement = element.querySelector("div");
-
-          console.log(transformCepAnObject[getKeyValue]);
-          getReplacedElement.innerHTML = transformCepAnObject[getKeyValue];
-        });
-      }, 2000);
-    });
+    .then((data) => setCepData(data));
 });
 
 // ////////////////////////////////////////////////////////////////////////////
@@ -60,6 +60,8 @@ document.querySelector("#form").addEventListener("submit", (event) => {
 
 function cepFactory(inputKey) {
   const isDeleteKey = inputKey === "Backspace" || inputKey === "Delete";
+
+  if (isDeleteKey) cepData.style.display = "none";
 
   function splitCep() {
     const getFirstEach = cep.value.slice(0, 5);
@@ -82,8 +84,7 @@ function cepFactory(inputKey) {
   }
 
   async function fetchDataByCep() {
-    const cepUrlService = `https://viacep.com.br/ws/${57073716}/json`;
-    // const cepUrlService = `https://viacep.com.br/ws/${cepMask().remove}/json`;
+    const cepUrlService = `https://viacep.com.br/ws/${cepMask().remove}/json`;
 
     return ({ data } = await fetch(cepUrlService));
   }
@@ -96,3 +97,17 @@ function cepFactory(inputKey) {
 //  Insert data
 //
 // ////////////////////////////////////////////////////////////////////////////
+
+function setCepData(cepData) {
+  document.querySelectorAll(".infoCep").forEach((element) => {
+    const getKeyElement = element.querySelector("span");
+
+    const getKeyValue = getKeyElement.textContent.toLocaleLowerCase();
+    const keyValueFormated = getKeyValue.replace(":", "").replace(" ", "");
+
+    const getReplacedElement = element.querySelector("div");
+
+    return (getReplacedElement.innerHTML =
+      cepData[keyValueFormated] || "Não possui");
+  });
+}

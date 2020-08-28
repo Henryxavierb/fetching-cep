@@ -41,7 +41,10 @@ form {
 }
 
 .input label {
-  font-weight: 400;
+  font-size: 25px;
+  font-weight: 700;
+
+  color: #55acee;
 
   margin-bottom: 10px;
 }
@@ -58,10 +61,13 @@ form {
   height: 40px;
   max-width: 400px;
 
+  color: #757575;
+  font-weight: 500;
+
   padding: 0 10px;
 
   border-radius: 4px;
-  border: 1px solid #24222e;
+  border: 1px solid #55acee;
 }
 
 .container button {
@@ -73,7 +79,7 @@ form {
   border-radius: 3px;
 
   color: #fdfafe;
-  background-color: #24222e;
+  background-color: #55acee;
 
   cursor: pointer;
   position: relative;
@@ -82,7 +88,7 @@ form {
 
 .container button:disabled {
   cursor: not-allowed;
-  background-color: #757575;
+  background-color: #bbdefb;
 }
 
 .container button span {
@@ -126,6 +132,9 @@ form {
   width: 95%;
   max-width: 400px;
   margin-top: 30px;
+
+  animation: Fade-in;
+  transition: all 0.5s;
 }
 
 .container #cepData ul {
@@ -135,6 +144,8 @@ form {
 .container #cepData ul li {
   display: flex;
   margin: 16px 0;
+
+  color: #424242;
 }
 
 .container #cepData ul li span {
@@ -145,5 +156,14 @@ form {
 @media (max-width: 630px) {
   .container #cepData ul li {
     flex-direction: column;
+  }
+}
+
+@keyframes Fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
