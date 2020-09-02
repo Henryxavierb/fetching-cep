@@ -26,13 +26,11 @@ cep.addEventListener("keyup", (event) => {
       btnCep.disabled = false;
 
       setTimeout(() => {
-        cepData.style.display = "flex";
-
         cepFactory()
           .fetchDataByCep()
           .then((response) => response.json())
           .then((data) => setCepData(data));
-      }, 300);
+      }, 500);
     } else {
       btnCep.disabled = true;
     }
@@ -43,13 +41,11 @@ document.querySelector("#form").addEventListener("submit", (event) => {
   event.preventDefault();
 
   setTimeout(() => {
-    cepData.style.display = "flex";
+    cepFactory()
+      .fetchDataByCep()
+      .then((response) => response.json())
+      .then((data) => setCepData(data));
   }, 500);
-
-  cepFactory()
-    .fetchDataByCep()
-    .then((response) => response.json())
-    .then((data) => setCepData(data));
 });
 
 // ////////////////////////////////////////////////////////////////////////////
@@ -85,6 +81,8 @@ function cepFactory(inputKey) {
 
   async function fetchDataByCep() {
     const cepUrlService = `https://viacep.com.br/ws/${cepMask().remove}/json`;
+
+    cepData.style.display = "flex";
 
     return ({ data } = await fetch(cepUrlService));
   }
