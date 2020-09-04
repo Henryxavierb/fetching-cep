@@ -1,126 +1,118 @@
 var cep = document.getElementById("cep");
 const cepData = document.getElementById("cepData");
+var inputLabel = document.getElementById("inputLabel");
 const btnCep = document.getElementById("consultarCep");
 
-// Initial state
 btnCep.disabled = true;
 cepData.style.display = "none";
-
-// ////////////////////////////////////////////////////////////////////////////
-//
-//  Input Managment
-//
-// ////////////////////////////////////////////////////////////////////////////
 
 cep.addEventListener("keyup", (event) => {
   const inputKey = event.key;
   const inputValue = event.target.value;
 
-  cep.value = managerKeyInputed(inputValue);
-
-  behaviorButton();
-  cepFactory(inputKey).cepMask().mask;
+  handleButton().changeLayoutButtonIfIsAvaliable(inputValue);
+  cep.value = cepFactory(inputKey).managerKeyInputed(inputValue);
 });
-
-/* 
-  Getting the last character instead of input key prevents that a valid input 
-  value be deleted one time that user press a key, like 'shift'.
-*/
-function managerKeyInputed(currentInputValue) {
-  const inputValueLength = currentInputValue.length;
-  const lastCharacter = currentInputValue.charAt(inputValueLength - 1);
-
-  return !isNaN(lastCharacter)
-    ? currentInputValue
-    : currentInputValue.substring(0, inputValueLength - 1);
-}
-
-function behaviorButton() {
-  const isAvailableCep = cep.value?.length > 8;
-
-  if (isAvailableCep) {
-    btnCep.disabled = false;
-
-    setTimeout(() => {
-      cepFactory()
-        .fetchDataByCep()
-        .then((response) => response.json())
-        .then((data) => setCepData(data));
-    }, 500);
-  } else {
-    btnCep.disabled = true;
-  }
-}
 
 document.querySelector("#form").addEventListener("submit", (event) => {
   event.preventDefault();
+  const customizeFormatCep = cep.value.replace("-", "");
 
-  // Miss handle if is a valid cep
-  setTimeout(() => {
-    cepFactory()
-      .fetchDataByCep()
-      .then((response) => response.json())
-      .then((data) => setCepData(data));
-  }, 500);
+  handleButton().onSubmit(customizeFormatCep);
 });
-
-// ////////////////////////////////////////////////////////////////////////////
-//
-//  CEP Factory
-//
-// ////////////////////////////////////////////////////////////////////////////
 
 function cepFactory(inputKey) {
   const isDeleteKey = inputKey === "Backspace" || inputKey === "Delete";
-
   if (isDeleteKey) cepData.style.display = "none";
 
-  function splitCep() {
-    const getFirstEach = cep.value.slice(0, 5);
-    const getSecondEach = cep.value.slice(6, 9);
+  function splitCep(inputValue) {
+    const getFirstEach = inputValue.slice(0, 5);
+    const getSecondEach = inputValue.slice(6, 9);
 
     return { getFirstEach, getSecondEach };
   }
 
-  function cepMask() {
-    const firstEach = splitCep().getFirstEach;
-    const secondEach = splitCep().getSecondEach;
+  function handleCepMask(inputValue) {
+    const firstEach = splitCep(inputValue).getFirstEach;
+    const secondEach = splitCep(inputValue).getSecondEach;
 
-    if (cep.value.length === 6) {
-      const newInput = `${firstEach}-${inputKey}${secondEach}`;
+    const newInput = `${firstEach}-${inputKey}${secondEach}`;
 
-      cep.value = isDeleteKey ? firstEach : newInput;
+    if (inputValue.length === 6) {
+      return isDeleteKey ? inputValue : newInput;
     }
 
-    return { mask: cep.value, remove: cep.value.replace("-", "") };
+    return inputValue.length === 7 && isDeleteKey ? firstEach : inputValue;
   }
 
-  async function fetchDataByCep() {
-    const cepUrlService = `https://viacep.com.br/ws/${cepMask().remove}/json`;
+  function managerKeyInputed(currentInputValue) {
+    const inputValueLength = currentInputValue.length;
+    const lastCharacter = currentInputValue.charAt(inputValueLength - 1);
 
-    cepData.style.display = "flex";
+    const handleInput = !isNaN(lastCharacter)
+      ? currentInputValue
+      : currentInputValue.substring(0, inputValueLength - 1);
+
+    return handleCepMask(handleInput);
+  }
+
+  async function fetchDataByCep(cep) {
+    const cepUrlService = `https://viacep.com.br/ws/${handleCepMask(cep)}/json`;
+
     return ({ data } = await fetch(cepUrlService));
   }
 
-  return { cepMask, splitCep, fetchDataByCep };
+  return { splitCep, handleCepMask, fetchDataByCep, managerKeyInputed };
 }
 
-// ////////////////////////////////////////////////////////////////////////////
-//
-//  Insert data
-//
-// ////////////////////////////////////////////////////////////////////////////
+function handleButton() {
+  function onSubmit(value) {
+    btnCep.disabled = true;
+    btnCep.querySelector("span").textContent = "Loading...";
+
+    setTimeout(() => {
+      cepFactory()
+        .fetchDataByCep(value)
+        .then((response) => response.json())
+        .then((cepResponse) => {
+          setCepData(cepResponse);
+
+          btnCep.disabled = false;
+          cepData.style.display = "flex";
+          btnCep.querySelector("span").textContent = "Consultar";
+        });
+    }, 500);
+  }
+
+  function changeLayoutButtonIfIsAvaliable(value) {
+    if (value.length < 9) {
+      btnCep.disabled = true;
+      inputLabel.style.color = "#55acee";
+      cep.style.border = "1px solid #55acee";
+      btnCep.style.backgroundColor = "#90caf9";
+    } else {
+      btnCep.disabled = false;
+      inputLabel.style.color = "#43a047";
+      cep.style.border = "1px solid #43a047";
+      btnCep.style.backgroundColor = "#81c784";
+    }
+  }
+
+  return { onSubmit, changeLayoutButtonIfIsAvaliable };
+}
 
 function setCepData(cepData) {
   document.querySelectorAll(".infoCep").forEach((element) => {
     const getKeyElement = element.querySelector("span");
-
-    const getKeyValue = getKeyElement.textContent.toLocaleLowerCase();
-    const keyValueFormated = getKeyValue.replace(":", "").replace(" ", "");
-
     const getReplacedElement = element.querySelector("div");
 
+    const getKeyValue = getKeyElement.textContent.toLocaleLowerCase();
+
+    const removeKeysComas = getKeyValue.replace(":", "");
+    const removeKeysSpaces = removeKeysComas.replace(" ", "");
+
+    /* Specifics CEPs, like 69685-000,  don't have some attributes. */
     return (getReplacedElement.innerHTML =
-      cepData[keyValueFormated] || "Não possui");
+      cepData[removeKeysSpaces] || "Não possui");
   });
 }
