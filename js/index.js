@@ -16,30 +16,46 @@ cep.addEventListener("keyup", (event) => {
   const inputKey = event.key;
   const inputValue = event.target.value;
 
+  cep.value = managerKeyInputed(inputValue);
+
   behaviorButton();
   cepFactory(inputKey).cepMask().mask;
-
-  function behaviorButton() {
-    const isAvailableCep = inputValue?.length > 8;
-
-    if (isAvailableCep) {
-      btnCep.disabled = false;
-
-      setTimeout(() => {
-        cepFactory()
-          .fetchDataByCep()
-          .then((response) => response.json())
-          .then((data) => setCepData(data));
-      }, 500);
-    } else {
-      btnCep.disabled = true;
-    }
-  }
 });
+
+/* 
+  Getting the last character instead of input key prevents that a valid input 
+  value be deleted one time that user press a key, like 'shift'.
+*/
+function managerKeyInputed(currentInputValue) {
+  const inputValueLength = currentInputValue.length;
+  const lastCharacter = currentInputValue.charAt(inputValueLength - 1);
+
+  return !isNaN(lastCharacter)
+    ? currentInputValue
+    : currentInputValue.substring(0, inputValueLength - 1);
+}
+
+function behaviorButton() {
+  const isAvailableCep = cep.value?.length > 8;
+
+  if (isAvailableCep) {
+    btnCep.disabled = false;
+
+    setTimeout(() => {
+      cepFactory()
+        .fetchDataByCep()
+        .then((response) => response.json())
+        .then((data) => setCepData(data));
+    }, 500);
+  } else {
+    btnCep.disabled = true;
+  }
+}
 
 document.querySelector("#form").addEventListener("submit", (event) => {
   event.preventDefault();
 
+  // Miss handle if is a valid cep
   setTimeout(() => {
     cepFactory()
       .fetchDataByCep()
@@ -83,7 +99,6 @@ function cepFactory(inputKey) {
     const cepUrlService = `https://viacep.com.br/ws/${cepMask().remove}/json`;
 
     cepData.style.display = "flex";
-
     return ({ data } = await fetch(cepUrlService));
   }
 
